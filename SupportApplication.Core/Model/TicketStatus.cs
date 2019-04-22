@@ -2,6 +2,7 @@
 {
     public enum TicketStatus
     {
+        Deleted = -2,
         Created = -1,
         Open = 0,
         Resolved = 1,

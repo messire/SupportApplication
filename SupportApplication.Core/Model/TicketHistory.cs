@@ -14,6 +14,22 @@ namespace SupportApplication.Core.Model
         public TicketStatus ChangedTo { get; set; }
         public DateTime DateTime { get; set; }
 
-        public TicketHistory() => Guid = System.Guid.NewGuid().ToString();
+        public TicketHistory()
+        {
+            Guid = System.Guid.NewGuid().ToString();
+            ChangedFrom = TicketStatus.Created;
+            DateTime = DateTime.Now;
+        }
+
+        public TicketHistory(Ticket ticket) : this()
+        {
+            Ticket = ticket;
+        }
+
+        public TicketHistory(Ticket ticket, TicketStatus oldStatus, TicketStatus newStatus) : this(ticket)
+        {
+            ChangedTo = newStatus;
+            ChangedFrom = oldStatus;
+        }
     }
 }

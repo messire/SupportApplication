@@ -9,13 +9,13 @@ namespace SupportApplication.Core.Repository
 {
     public interface IRepository<TEntity> where TEntity : class
     {
-        void Create(TEntity item);
+        int Create(TEntity item);
 
-        void Remove(TEntity item);
+        int Remove(TEntity item);
 
-        void Update(TEntity item);
+        int Update(TEntity item);
 
-        TEntity FindById(Guid guid);
+        TEntity FindById(string guid);
 
         IEnumerable<TEntity> GetAll();
 

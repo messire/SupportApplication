@@ -1,0 +1,52 @@
+﻿@model IEnumerable<SupportApplication.Core.Model.TicketHistory>
+
+@{
+    ViewBag.Title = "Tickets history";
+}
+
+<h2>List</h2>
+
+<p>
+    @Html.ActionLink("Back", "Index")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Guid)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Ticket.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ChangedFrom)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ChangedTo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DateTime)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Ticket.Guid)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Ticket.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ChangedFrom)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ChangedTo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DateTime)
+        </td>
+    </tr>
+}
+
+</table>

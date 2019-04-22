@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+using NLog;
+using SupportApplication.Core.Context;
+using SupportApplication.Core.Exception;
 
 namespace SupportApplication.Core.Repository
 {
@@ -12,56 +14,63 @@ namespace SupportApplication.Core.Repository
     {
         #region Variables
 
-        readonly DbContext _context;
+        private readonly DbContext _context;
 
-        readonly DbSet<TEntity> _dbSet;
+        private readonly DbSet<TEntity> _dbSet;
+
+        private readonly Logger _log;
 
         #endregion
 
         #region Constructor
 
+        public Repository()
+        {
+            _context = new SupportEntities();
+            _dbSet = _context.Set<TEntity>();
+            _log = LogManager.GetCurrentClassLogger();
+        }
+
         public Repository(DbContext context)
         {
             _context = context;
-            _dbSet = context.Set<TEntity>();
+            _dbSet = _context.Set<TEntity>();
+            _log = LogManager.GetCurrentClassLogger();
         }
 
         #endregion
 
         #region Destructor
 
-        ~Repository()
-        {
-            Dispose(false);
-        }
+        ~Repository() => Dispose(false);
 
         #endregion
 
         #region CRUD
 
-        public void Create(TEntity item)
+        public int Create(TEntity item)
         {
             _dbSet.Add(item);
-            _context.SaveChanges();
+            return SaveChanges();
         }
 
-        public void Update(TEntity item)
+        public int Update(TEntity item)
         {
             _context.Entry(item).State = EntityState.Modified;
-            _context.SaveChanges();
+            return SaveChanges();
         }
 
-        public void Remove(TEntity item)
+        public int Remove(TEntity item)
         {
             _dbSet.Remove(item);
-            _context.SaveChanges();
+            return SaveChanges();
         }
 
         #endregion
 
         #region Selection
 
-        public TEntity FindById(Guid guid) => _dbSet.Find(guid);
+        public TEntity FindById(string guid) => _dbSet.Find(guid);
 
         public IEnumerable<TEntity> GetAll() => _dbSet.AsNoTracking().ToList();
 
@@ -84,6 +93,42 @@ namespace SupportApplication.Core.Repository
             IQueryable<TEntity> query = _dbSet.AsNoTracking();
             return includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         }
+
+        private int SaveChanges()
+        {
+            SupportApplicationErrors error;
+            string logMessage;
+
+            try
+            {
+                return _context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                error = SupportApplicationErrors.ConcurrencyException;
+                logMessage = e.Message;
+            }
+            catch (DbUpdateException e)
+            {
+                error = SupportApplicationErrors.DatabaseUpdateException;
+                logMessage = e.Message;
+            }
+            catch (CommitFailedException e)
+            {
+                error = SupportApplicationErrors.DatabaseCommitException;
+                logMessage = e.Message;
+            }
+            catch (System.Exception e)
+            {
+                error = SupportApplicationErrors.UnexpectedException;
+                logMessage = e.Message;
+            }
+
+            LogError($"Database error: {error}{Environment.NewLine}Message: {logMessage}");
+            return (int)error;
+        }
+
+        private void LogError(string message) => _log.Error(message);
 
         #endregion
 

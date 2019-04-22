@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,6 @@ namespace SupportApplication.Core.Context
 
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<TicketHistory> TicketHistories { get; set; }
-
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

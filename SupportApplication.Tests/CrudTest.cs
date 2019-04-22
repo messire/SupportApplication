@@ -22,17 +22,24 @@ namespace SupportApplication.Tests
         public void Initialize()
         {
             _fixture = FixtureExtesion.CreateFixture();
-           _repo = new Repository<Ticket>(new SupportEntities());
-            
-            
+            _repo = new Repository<Ticket>(new SupportEntities());
         }
 
         [TestMethod]
         public void CreateTicket()
         {
-            var ticket = _fixture.Build<Ticket>().With(t => t.Status, TicketStatus.Open).Create();
+            var ticket = GenerateTicket();
 
             _repo.Create(ticket);
+        }
+
+        [TestMethod]
+        public void SetNewStatusTicket()
+        {
+            var ticket = GenerateTicket();
+            _repo.Create(ticket);
+            ticket.Status = TicketStatus.Resolved;
+            _repo.Update(ticket);
         }
 
         [TestMethod]
@@ -41,5 +48,10 @@ namespace SupportApplication.Tests
             var list = _repo.GetAll().ToList();
             list.ForEach(l=>Debug.WriteLine(l.Name));
         }
+
+        private Ticket GenerateTicket() => _fixture.Build<Ticket>()
+            .With(t => t.Status, TicketStatus.Open)
+            .Without(t => t.TicketHistoryCollection)
+            .Create();
     }
 }

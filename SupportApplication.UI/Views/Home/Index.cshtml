@@ -10,15 +10,15 @@
 
 <div class="row">
     <div class="col-md-4">
-        <h2>Create new Ticket</h2>
+        <h2> @Html.ActionLink("Create new Ticket", "Create", "Manage")</h2>
         <p>In this area you may create new Ticket for support team.</p>
     </div>
     <div class="col-md-4">
-        <h2>Tickets manage</h2>
+        <h2>@Html.ActionLink("Tickets manage", "Index", "Manage")</h2>
         <p>Manage existing tickets.</p>
     </div>
     <div class="col-md-4">
-        <h2>View tickets history</h2>
+        <h2>@Html.ActionLink("View tickets history", "List", "Manage")</h2>
         <p>It's amazing but this page exactly for view tickets history.</p>
     </div>
 </div>
