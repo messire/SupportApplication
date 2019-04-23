@@ -13,7 +13,7 @@ using SupportApplication.Tests.Extensions;
 namespace SupportApplication.Tests
 {
     [TestClass]
-    public class CrudTest
+    public class FuncTest
     {
         private Repository<Ticket> _repo;
         private Fixture _fixture;

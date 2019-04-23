@@ -3,55 +3,68 @@
 @model SupportApplication.Core.Model.Ticket
 
 @{
-    ViewBag.Title = "Edit";
-    IEnumerable<SelectListItem> selectList = ViewBag.selectList;
+	ViewBag.Title = "Edit";
+	IEnumerable<SelectListItem> selectList = ViewBag.selectList;
+	@Scripts.Render("~/Scripts/Manage.Comment.Validation.js");
 }
 
 <h2>Edit</h2>
 
 @using (Html.BeginForm())
 {
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>Ticket</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Guid)
+	@Html.AntiForgeryToken()
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DisplayFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-            </div>
-        </div>
+	<div class="form-horizontal">
+		<h4>Ticket</h4>
+		<hr />
+		@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+		@Html.HiddenFor(model => model.Guid)
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-            </div>
-        </div>
+		<div class="form-group">
+			@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 font-weight-bold">
+				@Html.DisplayFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+			</div>
+		</div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Status, selectList, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
-            </div>
-        </div>
+		<div class="form-group">
+			@Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+			</div>
+		</div>
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
+		<div class="form-group">
+			@Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.DropDownListFor(model => model.Status, selectList, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+			</div>
+		</div>
 
-        </div>
-    </div>
+		<div class="form-group">
+			@Html.Label("Comment")
+			<div class="col-md-10">
+				@Html.TextArea("comment", new { htmlAttributes = new { @class = "form-control" } })
+				@if (ViewBag.CommentError != string.Empty)
+				{
+					<div class="text-danger">
+						<p>@ViewBag.CommentError</p>
+					</div>
+				}
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-md-offset-2 col-md-10">
+				<input id="SaveStatus" type="submit" value="Save" class="btn btn-default" />
+			</div>
+
+		</div>
+	</div>
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+	@Html.ActionLink("Back to List", "Index")
 </div>

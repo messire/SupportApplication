@@ -40,14 +40,13 @@ namespace SupportApplication.UI.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Guid,Name,Description,Status")] Ticket ticket)
+        public ActionResult Create(Ticket ticket)
         {
             if (!ModelState.IsValid) return View(ticket);
 
             _repo.Create(ticket);
 
             return RedirectToAction("Index");
-
         }
 
         public ActionResult Edit(string id)
@@ -66,16 +65,16 @@ namespace SupportApplication.UI.Controllers
                     .Where(t => t == TicketStatus.Open || t == TicketStatus.Resolved)
                     .Select(t => new SelectListItem
                     {
-                        Value = ((int)t).ToString(),
+                        Value = ((int) t).ToString(),
                         Text = t.ToString()
-                    }); 
+                    });
             else if (ticket.Status == TicketStatus.Resolved)
                 selectList = Enum.GetValues(typeof(TicketStatus))
                     .Cast<TicketStatus>()
                     .Where(t => t == TicketStatus.Resolved || t == TicketStatus.Rejected || t == TicketStatus.Closed)
                     .Select(t => new SelectListItem
                     {
-                        Value = ((int)t).ToString(),
+                        Value = ((int) t).ToString(),
                         Text = t.ToString()
                     });
             else if (ticket.Status == TicketStatus.Rejected)
@@ -84,29 +83,37 @@ namespace SupportApplication.UI.Controllers
                     .Where(t => t == TicketStatus.Rejected || t == TicketStatus.Resolved)
                     .Select(t => new SelectListItem
                     {
-                        Value = ((int)t).ToString(),
+                        Value = ((int) t).ToString(),
                         Text = t.ToString()
                     });
 
+            var a = ModelState;
 
             ViewBag.selectList = selectList;
 
             return View(ticket);
-
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Guid,Description,Status")] Ticket ticket)
+        public ActionResult Edit(Ticket ticket, string comment)
         {
-            if (!ModelState.IsValid) return View(ticket);
+            if (string.IsNullOrEmpty(comment))
+            {
+                ViewBag.CommentError = "Comment field is required!";
+                ModelState.AddModelError("Comment", ViewBag.CommentError);
+            }
+
+            if (!ModelState.IsValid) return RedirectToAction("Edit", "Manage", new {ticket.Guid});
 
             Ticket updating = _repo.FindById(ticket.Guid);
             updating.TicketHistoryCollection = new List<TicketHistory>();
             updating.Description = ticket.Description;
             updating.Status = ticket.Status;
+            updating.TicketHistoryCollection.Last().Comment = comment;
 
             _repo.Update(updating);
+            ViewBag.CommentError = string.Empty;
 
             return RedirectToAction("Index");
         }
@@ -119,12 +126,8 @@ namespace SupportApplication.UI.Controllers
             }
 
             Ticket ticket = _repo.FindById(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
 
-            return View(ticket);
+            return ticket == null ? (ActionResult) HttpNotFound() : View(ticket);
         }
 
         [HttpPost, ActionName("Delete")]
@@ -151,6 +154,7 @@ namespace SupportApplication.UI.Controllers
             {
                 _repo.Dispose();
             }
+
             base.Dispose(disposing);
         }
     }
